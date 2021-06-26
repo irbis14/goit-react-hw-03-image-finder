@@ -55,7 +55,7 @@ class App extends Component {
           <ImageGalleryItem images={images} />
         </ImageGallery>
         {/* <Loader type="BallTriangle" color="#00BFFF" height={80} width={80} /> */}
-        <Button onClick={this.fetchArticles} />
+        <Button fetchArticles={this.fetchArticles} />
         {/* <Modal /> */}
       </div>
     );
