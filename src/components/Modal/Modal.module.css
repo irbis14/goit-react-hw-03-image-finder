@@ -12,6 +12,25 @@
 }
 
 .Modal {
+  position: relative;
   max-width: calc(100vw - 48px);
   max-height: calc(100vh - 24px);
+}
+
+.Modal__close {
+  position: fixed;
+  top: 5px;
+  right: 5px;
+  width: 30px;
+  height: 30px;
+
+  background-image: url(./icon-close.svg);
+  background-color: transparent;
+  border-color: transparent;
+  object-fit: contain;
+}
+
+.Modal__close:hover,
+.Modal__close:focus {
+  background-color: #3f51b5;
 }

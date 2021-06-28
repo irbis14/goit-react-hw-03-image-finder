@@ -1,6 +1,6 @@
 import styles from "./ImageGalleryItem.module.css";
 
-const ImageGalleryItem = ({ images }) => {
+const ImageGalleryItem = ({ images, onShowModal }) => {
   return images.map((image) => {
     return (
       <li key={image.id} className={styles.ImageGalleryItem}>
@@ -8,6 +8,9 @@ const ImageGalleryItem = ({ images }) => {
           src={image.webformatURL}
           alt={image.tags}
           className={styles.ImageGalleryItem__image}
+          onClick={onShowModal}
+          data-source={image.largeImageURL}
+          data-alt={image.tags}
         />
       </li>
     );

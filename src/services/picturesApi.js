@@ -7,9 +7,9 @@ const PARAM = "photo&orientation=horizontal";
 const fetchImages = ({ searchQuery = "", page = 1, pageSize = 12 }) => {
   return axios
     .get(
-      `${BASE_URL}?q=${searchQuery}&page=${page}&key=${API_KEY}&image_type=${PARAM}&${pageSize}`
+      `${BASE_URL}?q=${searchQuery}&page=${page}&key=${API_KEY}&image_type=${PARAM}&per_page=${pageSize}`
     )
     .then((response) => response.data.hits);
 };
 
-export default { fetchImages };
+export { fetchImages };

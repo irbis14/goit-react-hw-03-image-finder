@@ -1,5 +1,4 @@
 import { Component } from "react";
-import axios from "axios";
 
 import Button from "./components/Button";
 import ImageGallery from "./components/ImageGallery";
@@ -7,9 +6,11 @@ import ImageGalleryItem from "./components/ImageGalleryItem";
 import Modal from "./components/Modal";
 import Searchbar from "./components/Searchbar";
 import Loader from "react-loader-spinner";
-import picturesApi from "./services/picturesApi";
+import { fetchImages } from "./services/picturesApi";
+import { windowsScrolling } from "./utlis";
 
 import "./App.css";
+import styles from "./components/Loader/Loader.module.css";
 import "react-loader-spinner/dist/loader/css/react-spinner-loader.css";
 
 class App extends Component {
@@ -17,6 +18,11 @@ class App extends Component {
     images: [],
     searchQuery: "",
     page: 1,
+    isLoading: false,
+    error: null,
+    largeImageURL: "",
+    largeImageAlt: "",
+    showModal: false,
   };
 
   componentDidUpdate(prevProps, prevState) {
@@ -26,44 +32,79 @@ class App extends Component {
   }
 
   onSearchQuery = (query) => {
-    this.setState({ images: [], searchQuery: query, page: 1 });
+    this.setState({ images: [], searchQuery: query, page: 1, error: null });
   };
 
   fetchImages = () => {
     const { searchQuery, page } = this.state;
-    const options = {
-      searchQuery,
-      page,
-    };
+    const options = { searchQuery, page };
 
-    picturesApi.fetchImages(options).then((images) => {
-      this.setState((prevState) => ({
-        images: [...prevState.images, ...images],
-        page: prevState.page + 1,
-      }));
-    });
+    this.setState({ isLoading: true });
+
+    fetchImages(options)
+      .then((images) => {
+        this.setState((prevState) => ({
+          images: [...prevState.images, ...images],
+          page: prevState.page + 1,
+        }));
+        windowsScrolling();
+      })
+      .catch((error) => this.setState({ error }))
+      .finally(() => setTimeout(this.setState({ isLoading: false }), 500));
   };
 
-  windowsScrolling = () => {
-    // const totalScrollHeight = document.body.clientHeight;
-    window.scrollTo({
-      top: document.documentElement.scrollHeight,
-      left: 0,
-      behavior: "smooth",
+  onShowModal = (e) => {
+    this.setState({
+      largeImageURL: e.target.dataset.source,
+      largeImageAlt: e.target.dataset.alt,
     });
+    this.toggleModal();
+  };
+
+  toggleModal = () => {
+    this.setState(({ showModal }) => ({
+      showModal: !showModal,
+    }));
   };
 
   render() {
-    const { images } = this.state;
+    const {
+      images,
+      isLoading,
+      error,
+      showModal,
+      largeImageURL,
+      largeImageAlt,
+    } = this.state;
+    const loadingMoreButtonCondition = images.length > 0 && !isLoading;
     return (
       <div>
         <Searchbar onSubmit={this.onSearchQuery} />
+        {isLoading && (
+          <Loader
+            className={styles.Loader}
+            type="BallTriangle"
+            color="#00BFFF"
+            height={100}
+            width={100}
+          />
+        )}
+        {error && (
+          <h2 style={{ textAlign: "center" }}>Oops, something went wrong :/</h2>
+        )}
         <ImageGallery>
-          <ImageGalleryItem images={images} />
+          <ImageGalleryItem images={images} onShowModal={this.onShowModal} />
         </ImageGallery>
-        {/* <Loader type="BallTriangle" color="#00BFFF" height={80} width={80} /> */}
-        <Button fetchImages={this.fetchImages} />
-        {/* <Modal /> */}
+        {loadingMoreButtonCondition && (
+          <Button fetchImages={this.fetchImages} />
+        )}
+        {showModal && (
+          <Modal
+            onClose={this.toggleModal}
+            largeImageURL={largeImageURL}
+            largeImageAlt={largeImageAlt}
+          />
+        )}
       </div>
     );
   }
