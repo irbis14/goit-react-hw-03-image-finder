@@ -7,13 +7,10 @@ import ImageGalleryItem from "./components/ImageGalleryItem";
 import Modal from "./components/Modal";
 import Searchbar from "./components/Searchbar";
 import Loader from "react-loader-spinner";
+import picturesApi from "./services/picturesApi";
 
 import "./App.css";
 import "react-loader-spinner/dist/loader/css/react-spinner-loader.css";
-
-const BASE_URL = "https://pixabay.com/api/";
-const API_KEY = "21304546-dfd139bdae93d70ad7d2573af";
-const PARAM = "photo&orientation=horizontal";
 
 class App extends Component {
   state = {
@@ -24,26 +21,36 @@ class App extends Component {
 
   componentDidUpdate(prevProps, prevState) {
     if (prevState.searchQuery !== this.state.searchQuery) {
-      this.fetchArticles();
+      this.fetchImages();
     }
   }
 
   onSearchQuery = (query) => {
-    this.setState({ searchQuery: query });
+    this.setState({ images: [], searchQuery: query, page: 1 });
   };
 
-  fetchArticles = () => {
+  fetchImages = () => {
     const { searchQuery, page } = this.state;
-    return axios
-      .get(
-        `${BASE_URL}?q=${searchQuery}&page=${page}&key=${API_KEY}&image_type=${PARAM}&per_page=12`
-      )
-      .then((response) => {
-        this.setState((prevState) => ({
-          images: [prevState.images, ...response.data.hits],
-          page: prevState.page + 1,
-        }));
-      });
+    const options = {
+      searchQuery,
+      page,
+    };
+
+    picturesApi.fetchImages(options).then((images) => {
+      this.setState((prevState) => ({
+        images: [...prevState.images, ...images],
+        page: prevState.page + 1,
+      }));
+    });
+  };
+
+  windowsScrolling = () => {
+    // const totalScrollHeight = document.body.clientHeight;
+    window.scrollTo({
+      top: document.documentElement.scrollHeight,
+      left: 0,
+      behavior: "smooth",
+    });
   };
 
   render() {
@@ -55,7 +62,7 @@ class App extends Component {
           <ImageGalleryItem images={images} />
         </ImageGallery>
         {/* <Loader type="BallTriangle" color="#00BFFF" height={80} width={80} /> */}
-        <Button fetchArticles={this.fetchArticles} />
+        <Button fetchImages={this.fetchImages} />
         {/* <Modal /> */}
       </div>
     );
