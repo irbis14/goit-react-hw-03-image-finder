@@ -26,6 +26,7 @@
 
   background-image: url(./icon-close.svg);
   background-color: transparent;
+  background-position: center;
   border-color: transparent;
   object-fit: contain;
 }

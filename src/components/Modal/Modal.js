@@ -1,4 +1,5 @@
 import { Component } from "react";
+import PropTypes from "prop-types";
 import styles from "./Modal.module.css";
 
 class Modal extends Component {
@@ -22,6 +23,10 @@ class Modal extends Component {
     }
   };
 
+  onButtonClose = () => {
+    this.props.onClose();
+  };
+
   render() {
     const { largeImageURL, largeImageAlt } = this.props;
     return (
@@ -31,12 +36,19 @@ class Modal extends Component {
           <button
             type="button"
             className={styles.Modal__close}
-            onClick={this.props.onClose}
+            onClick={() => {
+              this.props.onClose();
+            }}
           ></button>
         </div>
       </div>
     );
   }
 }
+
+Modal.propTypes = {
+  largeImageURL: PropTypes.string,
+  largeImageAlt: PropTypes.string,
+};
 
 export default Modal;
