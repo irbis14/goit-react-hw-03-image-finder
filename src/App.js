@@ -67,6 +67,10 @@ class App extends Component {
     }));
   };
 
+  onModalButtonClose = () => {
+    this.setState({ showModal: false });
+  };
+
   render() {
     const {
       images,
@@ -100,6 +104,7 @@ class App extends Component {
         )}
         {showModal && (
           <Modal
+            onButtonClose={this.onModalButtonClose}
             onClose={this.toggleModal}
             largeImageURL={largeImageURL}
             largeImageAlt={largeImageAlt}

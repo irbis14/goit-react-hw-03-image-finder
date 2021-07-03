@@ -23,10 +23,6 @@ class Modal extends Component {
     }
   };
 
-  onButtonClose = () => {
-    this.props.onClose();
-  };
-
   render() {
     const { largeImageURL, largeImageAlt } = this.props;
     return (
@@ -36,9 +32,7 @@ class Modal extends Component {
           <button
             type="button"
             className={styles.Modal__close}
-            onClick={() => {
-              this.props.onClose();
-            }}
+            onClick={this.props.onModalButtonClose}
           ></button>
         </div>
       </div>
